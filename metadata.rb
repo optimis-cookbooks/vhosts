@@ -8,7 +8,7 @@ long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 
 version           '0.0.1'
 
-recipe            'vhosts::default'
+recipe            'vhosts::default', 'Configures apache2 vhosts.'
 
 %w{redhat centos scientific fedora debian ubuntu arch freebsd amazon}.each do |os|
   supports os
@@ -28,9 +28,7 @@ attribute 'apache2/vhosts/aliases',
 
 attribute 'apache2/vhosts/ssl',
   :display_name => 'Apache SSL Configuration',
-  :description => 'A boolean setting that determines if a SSL vhost should be set.',
-  :type => 'boolean',
-  :default => true
+  :description => 'A boolean setting that determines if a SSL vhost should be set.'
 
 attribute 'apache2/vhosts/domain',
   :display_name => 'SSL Domain',
@@ -40,5 +38,4 @@ attribute 'apache2/vhosts/domain',
 attribute 'apache2/vhosts/environment',
   :display_name => 'Passenger RailsEnv Directive',
   :description => 'Sets the rails environment.',
-  :type => 'string',
-  :default => true
+  :type => 'string'
