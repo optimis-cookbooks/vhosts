@@ -1,0 +1,137 @@
+<VirtualHost *:80>
+  ServerName <%= @params['server_name'] %>
+
+  <% if @params['server_aliases'] %>
+    <% @params['server_aliases'].each do |server_alias| %>
+      ServerAlias <%= server_alias %>
+    <% end %>
+  <% end %>
+
+  DocumentRoot /var/www/<%= @params['server_name'] %>/current/public
+
+  RailsEnv <%= @params['rails_env'] %>
+
+  <% if @params['variables'] %>
+    <% @params['variables'].each do |variable| %>
+      <%= "#{variable['key']} #{variable['value']}" %>
+    <% end %>
+  <% end %>
+
+  <Directory /var/www/<%= @params['server_name'] %>/current/public>
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+  </Directory>
+  
+  <Directory />
+    Options FollowSymLinks
+    AllowOverride None
+  </Directory>
+
+  ExpiresActive On
+  <Directory /var/www/<%= "#{@params['server_name']}/current/public/assets" %>>
+    Options MultiViews
+    ExpiresDefault "access plus 1 year"
+  </Directory>
+
+  <Location /server-status>
+    SetHandler server-status
+
+    Order Deny,Allow
+    Deny from all
+    Allow from 127.0.0.1
+  </Location>
+
+  LogLevel info
+  ErrorLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-error.log
+  CustomLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-access.log combined
+  TransferLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-transfer.log
+  RewriteLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-rewrite.log
+
+  AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
+
+  RewriteEngine On
+  RewriteLogLevel 0
+
+  ErrorDocument 503 /system/maintenance.html
+
+  RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
+  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+  RewriteCond %{REQUEST_URI} !^/keepalive.html$
+  RewriteRule ^.*$  -  [redirect=503,last]
+
+  <% if @params['ssl'] %>
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
+  <% end %>
+
+</VirtualHost>
+
+<% if @params['ssl'] %>
+  <VirtualHost *:443>
+    ServerName <%= @params['server_name'] %>
+
+    <% if @params['server_aliases'] %>
+      <% @params['server_aliases'].each do |server_alias| %>
+        ServerAlias <%= server_alias %>
+      <% end %>
+    <% end %>
+
+    <% if @params['domain'] %>
+      SSLEngine on
+      SSLCertificateFile <%= "/etc/ssl/certs/#{@params['domain']}/#{@params['domain']}.com.crt" %>
+      SSLCertificateChainFile <%= "/etc/ssl/certs/#{@params['domain']}/sf_bundle.crt" %>
+      SSLCertificateKeyFile <%= "/etc/ssl/certs/#{@params['domain']}/#{@params['domain']}.key" %>
+    <% end %>
+
+    DocumentRoot /var/www/<%= @params['server_name'] %>/current/public
+
+    RailsEnv <%= @params['rails_env'] %>
+
+    <Directory /var/www/<%= @params['server_name'] %>/current/public>
+      Options FollowSymLinks
+      AllowOverride None
+      Order allow,deny
+      Allow from all
+    </Directory>
+    
+    <Directory />
+      Options FollowSymLinks
+      AllowOverride None
+    </Directory>
+
+    ExpiresActive On
+    <Directory /var/www/<%= "#{@params['server_name']}/current/public/assets" %>>
+      Options MultiViews
+      ExpiresDefault "access plus 1 year"
+    </Directory>
+
+    <Location /server-status>
+      SetHandler server-status
+
+      Order Deny,Allow
+      Deny from all
+      Allow from 127.0.0.1
+    </Location>
+
+    LogLevel info
+    ErrorLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-error.log
+    CustomLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-access.log combined
+    TransferLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-transfer.log
+    RewriteLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-rewrite.log
+
+    AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
+
+    RewriteEngine On
+    RewriteLogLevel 0
+
+    ErrorDocument 503 /system/maintenance.html
+
+    RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
+    RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+    RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+    RewriteCond %{REQUEST_URI} !^/keepalive.html$
+    RewriteRule ^.*$  -  [redirect=503,last]
+  </VirtualHost>
+<% end %>
