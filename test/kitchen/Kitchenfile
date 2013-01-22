@@ -1,0 +1,10 @@
+cookbook 'vhosts' do
+  lint false
+end
+
+platform :centos do
+  version '5.8' do
+    box 'opscode-centos-5.8'
+    box_url 'https://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-5.8.box'
+  end
+end
