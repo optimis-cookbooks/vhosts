@@ -6,12 +6,11 @@ include_recipe 'apache2'
 node['apache2']['vhosts'].each do |vhost|
   web_app vhost['name'] do
     template 'web_app.ssl.conf.erb'
-    server_name vhost['name']
-    server_aliases vhost['aliases']
+    server_name vhost.fetch('name')
+    server_aliases vhost.fetch('aliases')
     ssl true
-    domain vhost['domain']
+    domain vhost.fetch('domain')
 
-    rails_env vhost['environment']
-    variables vhost['variables'] if vhost['variables']
+    rails_env vhost.fetch('environment')
   end
 end
