@@ -11,12 +11,6 @@
 
   RailsEnv <%= @params['rails_env'] %>
 
-  <% if @params['variables'] %>
-    <% @params['variables'].each do |variable| %>
-      <%= "#{variable['key']} #{variable['value']}" %>
-    <% end %>
-  <% end %>
-
   <Directory /var/www/<%= @params['server_name'] %>/current/public>
     Options FollowSymLinks
     AllowOverride None
