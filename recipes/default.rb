@@ -4,16 +4,14 @@ raise 'No vhosts configured for this node.' unless node['apache2']['vhosts']
 include_recipe 'apache2'
 
 node['apache2']['vhosts'].each do |vhost|
-  application = vhost
-
   web_app application['name'] do
     template 'web_app.ssl.conf.erb'
-    server_name application['name']
-    server_aliases application['aliases']
+    server_name vhost['name']
+    server_aliases vhost['aliases']
     ssl true
-    domain application['domain']
+    domain vhost['domain']
 
-    rails_env application['environment']
-    variables application['variables'] if application['variables']
+    rails_env vhost['environment']
+    variables vhost['variables'] if vhost['variables']
   end
 end
