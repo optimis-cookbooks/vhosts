@@ -7,11 +7,11 @@
     <% end %>
   <% end %>
 
-  DocumentRoot /var/www/<%= @params['server_name'] %>/current/public
+  DocumentRoot <%= @params['path'] %>
 
   RailsEnv <%= @params['rails_env'] %>
 
-  <Directory /var/www/<%= @params['server_name'] %>/current/public>
+  <Directory <%= @params['path'] %>>
     Options FollowSymLinks
     AllowOverride None
     Order allow,deny
@@ -24,7 +24,7 @@
   </Directory>
 
   ExpiresActive On
-  <Directory /var/www/<%= "#{@params['server_name']}/current/public/assets" %>>
+  <Directory <%= "#{@params['path']}/assets" %>>
     Options MultiViews
     ExpiresDefault "access plus 1 year"
   </Directory>
@@ -79,11 +79,11 @@
       SSLCertificateKeyFile <%= "/etc/ssl/certs/#{@params['domain']}/#{@params['domain']}.key" %>
     <% end %>
 
-    DocumentRoot /var/www/<%= @params['server_name'] %>/current/public
+    DocumentRoot <%= @params['path'] %>
 
     RailsEnv <%= @params['rails_env'] %>
 
-    <Directory /var/www/<%= @params['server_name'] %>/current/public>
+    <Directory <%= @params['path'] %>>
       Options FollowSymLinks
       AllowOverride None
       Order allow,deny
@@ -96,7 +96,7 @@
     </Directory>
 
     ExpiresActive On
-    <Directory /var/www/<%= "#{@params['server_name']}/current/public/assets" %>>
+    <Directory <%= "#{@params['path']}/assets" %>>
       Options MultiViews
       ExpiresDefault "access plus 1 year"
     </Directory>
