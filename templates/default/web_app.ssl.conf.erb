@@ -1,17 +1,17 @@
 <VirtualHost *:80>
-  ServerName <%= @params['server_name'] %>
+  ServerName <%= @params[:server_name] %>
 
-  <% if @params['server_aliases'] %>
-    <% @params['server_aliases'].each do |server_alias| %>
+  <% if @params[:server_aliases] %>
+    <% @params[:server_aliases].each do |server_alias| %>
       ServerAlias <%= server_alias %>
     <% end %>
   <% end %>
 
-  DocumentRoot <%= @params['path'] %>
+  DocumentRoot <%= @params[:path] %>
 
-  RailsEnv <%= @params['rails_env'] %>
+  RailsEnv <%= @params[:rails_env] %>
 
-  <Directory <%= @params['path'] %>>
+  <Directory <%= @params[:path] %>>
     Options FollowSymLinks
     AllowOverride None
     Order allow,deny
@@ -24,7 +24,7 @@
   </Directory>
 
   ExpiresActive On
-  <Directory <%= "#{@params['path']}/assets" %>>
+  <Directory <%= "#{@params[:path]}/assets" %>>
     Options MultiViews
     ExpiresDefault "access plus 1 year"
   </Directory>
@@ -38,10 +38,10 @@
   </Location>
 
   LogLevel info
-  ErrorLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-error.log
-  CustomLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-access.log combined
-  TransferLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-transfer.log
-  RewriteLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-rewrite.log
+  ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
+  CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-access.log combined
+  TransferLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-transfer.log
+  RewriteLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-rewrite.log
 
   AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
 
@@ -56,34 +56,34 @@
   RewriteCond %{REQUEST_URI} !^/keepalive.html$
   RewriteRule ^.*$  -  [redirect=503,last]
 
-  <% if @params['ssl'] %>
+  <% if @params[:ssl] %>
     RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
   <% end %>
 
 </VirtualHost>
 
-<% if @params['ssl'] %>
+<% if @params[:ssl] %>
   <VirtualHost *:443>
-    ServerName <%= @params['server_name'] %>
+    ServerName <%= @params[:server_name] %>
 
-    <% if @params['server_aliases'] %>
-      <% @params['server_aliases'].each do |server_alias| %>
+    <% if @params[:server_aliases] %>
+      <% @params[:server_aliases].each do |server_alias| %>
         ServerAlias <%= server_alias %>
       <% end %>
     <% end %>
 
-    <% if @params['domain'] %>
+    <% if @params[:domain] %>
       SSLEngine on
-      SSLCertificateFile <%= "/etc/ssl/certs/#{@params['domain']}/#{@params['domain']}.com.crt" %>
-      SSLCertificateChainFile <%= "/etc/ssl/certs/#{@params['domain']}/sf_bundle.crt" %>
-      SSLCertificateKeyFile <%= "/etc/ssl/certs/#{@params['domain']}/#{@params['domain']}.key" %>
+      SSLCertificateFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.com.crt" %>
+      SSLCertificateChainFile <%= "/etc/ssl/certs/#{@params[:domain]}/sf_bundle.crt" %>
+      SSLCertificateKeyFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.key" %>
     <% end %>
 
-    DocumentRoot <%= @params['path'] %>
+    DocumentRoot <%= @params[:path] %>
 
-    RailsEnv <%= @params['rails_env'] %>
+    RailsEnv <%= @params[:rails_env] %>
 
-    <Directory <%= @params['path'] %>>
+    <Directory <%= @params[:path] %>>
       Options FollowSymLinks
       AllowOverride None
       Order allow,deny
@@ -96,7 +96,7 @@
     </Directory>
 
     ExpiresActive On
-    <Directory <%= "#{@params['path']}/assets" %>>
+    <Directory <%= "#{@params[:path]}/assets" %>>
       Options MultiViews
       ExpiresDefault "access plus 1 year"
     </Directory>
@@ -110,10 +110,10 @@
     </Location>
 
     LogLevel info
-    ErrorLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-error.log
-    CustomLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-access.log combined
-    TransferLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-transfer.log
-    RewriteLog <%= node['apache']['log_dir'] %>/<%= @params['server_name'] %>-rewrite.log
+    ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
+    CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-access.log combined
+    TransferLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-transfer.log
+    RewriteLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-rewrite.log
 
     AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
 
