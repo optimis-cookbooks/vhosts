@@ -11,5 +11,11 @@ node['apache2']['vhosts'].each do |vhost|
     ssl true
     domain vhost['domain']
     rails_env vhost['environment']
+
+    if vhost['path']
+      path vhost['path']
+    else
+      path "/var/www/#{vhost['name']}/public"
+    end
   end
 end
