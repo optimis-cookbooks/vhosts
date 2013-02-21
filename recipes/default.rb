@@ -15,7 +15,7 @@ node['apache2']['vhosts'].each do |vhost|
     if vhost['path']
       path vhost['path']
     else
-      path "/var/www/#{vhost['name']}/public"
+      path "/var/www/#{vhost['name']}/current/public"
     end
   end
 end
