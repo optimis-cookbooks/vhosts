@@ -52,7 +52,6 @@
   RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
   RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
   RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-  RewriteCond %{REQUEST_URI} !^/keepalive.html$
   RewriteRule ^.*$  -  [redirect=503,last]
 
   <% if node['apache2']['enable_charts_redirect'] -%>
@@ -65,6 +64,7 @@
 
   <% if @params[:ssl] -%>
     RewriteCond %{REQUEST_URI} !^/api/v4(.*)$
+    RewriteCond %{REQUEST_URI} !^/balancer.html$
     RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
   <% end -%>
 </VirtualHost>
@@ -131,7 +131,6 @@
     RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
     RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
     RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-    RewriteCond %{REQUEST_URI} !^/keepalive.html$
     RewriteRule ^.*$  -  [redirect=503,last]
   </VirtualHost>
 <% end -%>
