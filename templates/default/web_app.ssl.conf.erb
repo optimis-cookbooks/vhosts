@@ -59,7 +59,7 @@
   <% end -%>
 
   <% if node['apache2']['enable_optimispt_redirect'] -%>
-    RewriteRule ^/charts(.*)$ https://optimis-reporting.optimispt.com%{REQUEST_URI} [R,L]
+    RewriteRule ^((?!charts).)*$ https://rs-production.optimispt.com%{REQUEST_URI} [R,L]
   <% end -%>
 
   <% if @params[:ssl] -%>
@@ -132,5 +132,13 @@
     RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
     RewriteCond %{SCRIPT_FILENAME} !maintenance.html
     RewriteRule ^.*$  -  [redirect=503,last]
+
+    <% if node['apache2']['enable_charts_redirect'] -%>
+      RewriteRule ^/charts(.*)$ https://optimis-reporting.optimispt.com%{REQUEST_URI} [R,L]
+    <% end -%>
+
+    <% if node['apache2']['enable_optimispt_redirect'] -%>
+      RewriteRule ^((?!charts).)*$ https://rs-production.optimispt.com%{REQUEST_URI} [R,L]
+    <% end -%>
   </VirtualHost>
 <% end -%>
