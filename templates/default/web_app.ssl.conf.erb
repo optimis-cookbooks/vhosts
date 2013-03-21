@@ -1,11 +1,11 @@
 <VirtualHost *:80>
   ServerName <%= @params[:server_name] %>
 
-  <% if @params[:server_aliases] %>
-    <% @params[:server_aliases].each do |server_alias| %>
+  <% if @params[:server_aliases] -%>
+    <% @params[:server_aliases].each do |server_alias| -%>
       ServerAlias <%= server_alias %>
-    <% end %>
-  <% end %>
+    <% end -%>
+  <% end -%>
 
   DocumentRoot <%= @params[:path] %>
 
@@ -46,7 +46,6 @@
   AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
 
   RewriteEngine On
-  RewriteLogLevel 0
 
   ErrorDocument 503 /system/maintenance.html
 
@@ -56,28 +55,36 @@
   RewriteCond %{REQUEST_URI} !^/keepalive.html$
   RewriteRule ^.*$  -  [redirect=503,last]
 
-  <% if @params[:ssl] %>
-    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
-  <% end %>
+  <% if node['apache2']['enable_charts_redirect'] -%>
+    RewriteRule ^/charts(.*)$ https://optimis-reporting.optimispt.com%{REQUEST_URI} [R,L]
+  <% end -%>
 
+  <% if node['apache2']['enable_optimispt_redirect'] -%>
+    RewriteRule ^/charts(.*)$ https://optimis-reporting.optimispt.com%{REQUEST_URI} [R,L]
+  <% end -%>
+
+  <% if @params[:ssl] -%>
+    RewriteCond %{REQUEST_URI} !^/api/v4(.*)$
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
+  <% end -%>
 </VirtualHost>
 
-<% if @params[:ssl] %>
+<% if @params[:ssl] -%>
   <VirtualHost *:443>
     ServerName <%= @params[:server_name] %>
 
-    <% if @params[:server_aliases] %>
-      <% @params[:server_aliases].each do |server_alias| %>
+    <% if @params[:server_aliases] -%>
+      <% @params[:server_aliases].each do |server_alias| -%>
         ServerAlias <%= server_alias %>
-      <% end %>
-    <% end %>
+      <% end -%>
+    <% end -%>
 
-    <% if @params[:domain] %>
+    <% if @params[:domain] -%>
       SSLEngine on
       SSLCertificateFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.com.crt" %>
       SSLCertificateChainFile <%= "/etc/ssl/certs/#{@params[:domain]}/sf_bundle.crt" %>
       SSLCertificateKeyFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.key" %>
-    <% end %>
+    <% end -%>
 
     DocumentRoot <%= @params[:path] %>
 
@@ -118,7 +125,6 @@
     AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
 
     RewriteEngine On
-    RewriteLogLevel 0
 
     ErrorDocument 503 /system/maintenance.html
 
