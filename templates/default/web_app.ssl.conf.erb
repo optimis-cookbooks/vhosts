@@ -27,6 +27,7 @@
   <Directory <%= "#{@params[:path]}/assets" %>>
     Options MultiViews
     ExpiresDefault "access plus 1 year"
+    Header set Access-Control-Allow-Origin "*"
   </Directory>
 
   <Location /server-status>
@@ -106,6 +107,7 @@
     <Directory <%= "#{@params[:path]}/assets" %>>
       Options MultiViews
       ExpiresDefault "access plus 1 year"
+      Header set Access-Control-Allow-Origin "*"
     </Directory>
 
     <Location /server-status>
