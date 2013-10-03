@@ -8,7 +8,7 @@ node['apache2']['vhosts'].each do |vhost|
     template 'web_app.ssl.conf.erb'
     server_name vhost['name']
     server_aliases vhost['aliases']
-    ssl vhost['ssl'] or true
+    ssl (vhost['ssl'] or true)
     domain vhost['domain']
     rails_env vhost['environment']
 
