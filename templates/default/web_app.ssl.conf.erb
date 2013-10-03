@@ -144,3 +144,78 @@
     <% end -%>
   </VirtualHost>
 <% end -%>
+
+<% if @params[:ssl] -%>
+  <VirtualHost *:443>
+    ServerName <%= @params[:server_name] %>
+
+    <% if @params[:server_aliases] -%>
+      <% @params[:server_aliases].each do |server_alias| -%>
+        ServerAlias <%= server_alias %>
+      <% end -%>
+    <% end -%>
+
+    <% if @params[:domain] -%>
+      SSLEngine on
+      SSLCertificateFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.com.crt" %>
+      SSLCertificateChainFile <%= "/etc/ssl/certs/#{@params[:domain]}/sf_bundle.crt" %>
+      SSLCertificateKeyFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.key" %>
+    <% end -%>
+
+    DocumentRoot <%= @params[:path] %>
+
+    RailsEnv <%= @params[:rails_env] %>
+
+    <Directory <%= @params[:path] %>>
+      Options FollowSymLinks
+      AllowOverride None
+      Order allow,deny
+      Allow from all
+    </Directory>
+    
+    <Directory />
+      Options FollowSymLinks
+      AllowOverride None
+    </Directory>
+
+    ExpiresActive On
+    <Directory <%= "#{@params[:path]}/assets" %>>
+      Options MultiViews
+      ExpiresDefault "access plus 1 year"
+      Header set Access-Control-Allow-Origin "*"
+    </Directory>
+
+    <Location /server-status>
+      SetHandler server-status
+
+      Order Deny,Allow
+      Deny from all
+      Allow from 127.0.0.1
+    </Location>
+
+    LogLevel info
+    ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
+    CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-access.log combined
+    TransferLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-transfer.log
+    RewriteLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-rewrite.log
+
+    AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
+
+    RewriteEngine On
+
+    ErrorDocument 503 /system/maintenance.html
+
+    RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
+    RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+    RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+    RewriteRule ^.*$  -  [redirect=503,last]
+
+    <% if node['apache2']['enable_charts_redirect'] -%>
+      RewriteRule ^/charts(.*)$ https://optimis-reporting.optimispt.com%{REQUEST_URI} [R,L]
+    <% end -%>
+
+    <% if node['apache2']['enable_optimispt_redirect'] -%>
+      RewriteRule ^((?!charts).)*$ https://rs-production.optimispt.com%{REQUEST_URI} [R,L]
+    <% end -%>
+  </VirtualHost>
+<% end -%>
