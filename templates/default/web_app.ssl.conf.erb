@@ -52,6 +52,7 @@
 
   RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
   RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+  RewriteCond %{REQUEST_URI} !^/balancer.html$
   RewriteCond %{SCRIPT_FILENAME} !maintenance.html
   RewriteRule ^.*$  -  [redirect=503,last]
 
@@ -132,6 +133,7 @@
 
     RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
     RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+    RewriteCond %{REQUEST_URI} !^/balancer.html$
     RewriteCond %{SCRIPT_FILENAME} !maintenance.html
     RewriteRule ^.*$  -  [redirect=503,last]
 
