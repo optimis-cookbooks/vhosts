@@ -30,6 +30,14 @@
     Header set Access-Control-Allow-Origin "*"
   </Directory>
 
+  <% if @params[:locations] -%>
+    <% @params[:locations].each do |location| -%>
+      Order Deny,Allow
+      Deny from all
+      Allow from <%= location[:ips].join(' ') %>
+    <% end -%>
+  <% end -%>
+
   <Location /server-status>
     SetHandler server-status
 
