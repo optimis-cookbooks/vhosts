@@ -11,6 +11,7 @@ node['apache2']['vhosts'].each do |vhost|
     ssl (vhost['ssl'] or true)
     domain vhost['domain']
     rails_env vhost['environment']
+    passenger_ruby vhost['passenger_ruby']
     locations vhost['locations']
 
     if vhost['path']

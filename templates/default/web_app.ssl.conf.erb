@@ -100,6 +100,10 @@
 
     RailsEnv <%= @params[:rails_env] %>
 
+    <% if @params[:passenger_ruby] -%>
+      PassengerRuby <%= @params[:passenger_ruby] %>
+    <% end %>
+
     # NewRelic Request Queue Reporting.
     RequestHeader set X-Request-Start "%t"
 
