@@ -14,8 +14,13 @@
   <Directory <%= @params[:path] %>>
     Options FollowSymLinks
     AllowOverride None
+
+    <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
+    Require all granted
+    <% else %>
     Order allow,deny
     Allow from all
+    <% end -%>
   </Directory>
   
   <Directory />
@@ -32,8 +37,13 @@
 
   <% if @params[:locations] -%>
     <% @params[:locations].each do |location| -%>
-      Order Deny,Allow
-      Deny from all
+      <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
+      Require all denied
+      <% else %>
+      Order allow,deny
+      Allow from all
+      <% end -%>
+
       Allow from <%= location[:ips].join(' ') %>
     <% end -%>
   <% end -%>
@@ -41,8 +51,13 @@
   <Location /server-status>
     SetHandler server-status
 
-    Order Deny,Allow
-    Deny from all
+    <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
+    Require all granted
+    <% else %>
+    Order allow,deny
+    Allow from all
+    <% end -%>
+
     Allow from 127.0.0.1
   </Location>
 
@@ -110,8 +125,13 @@
     <Directory <%= @params[:path] %>>
       Options FollowSymLinks
       AllowOverride None
+
+      <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
+      Require all granted
+      <% else %>
       Order allow,deny
       Allow from all
+      <% end -%>
     </Directory>
     
     <Directory />
@@ -129,8 +149,13 @@
     <Location /server-status>
       SetHandler server-status
 
-      Order Deny,Allow
-      Deny from all
+      <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
+      Require all denied
+      <% else %>
+      Order allow,deny
+      Allow from all
+      <% end -%>
+
       Allow from 127.0.0.1
     </Location>
 
