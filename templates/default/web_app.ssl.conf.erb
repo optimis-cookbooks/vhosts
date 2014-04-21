@@ -2,9 +2,9 @@
   ServerName <%= @params[:server_name] %>
 
   <% if @params[:server_aliases] -%>
-    <% @params[:server_aliases].each do |server_alias| -%>
-      ServerAlias <%= server_alias %>
-    <% end -%>
+  <% @params[:server_aliases].each do |server_alias| -%>
+  ServerAlias <%= server_alias %>
+  <% end -%>
   <% end -%>
 
   DocumentRoot <%= @params[:path] %>
@@ -65,14 +65,6 @@
   RewriteCond %{SCRIPT_FILENAME} !maintenance.html
   RewriteRule ^.*$  -  [redirect=503,last]
 
-  <% if node['apache2']['enable_charts_redirect'] -%>
-    RewriteRule ^/charts(.*)$ https://optimis-reporting.optimispt.com%{REQUEST_URI} [R,L]
-  <% end -%>
-
-  <% if node['apache2']['enable_optimispt_redirect'] -%>
-    RewriteRule ^((?!charts).)*$ https://rs-production.optimispt.com%{REQUEST_URI} [R,L]
-  <% end -%>
-
   <% if @params[:ssl] -%>
     RewriteCond %{REQUEST_URI} !^/api/v4(.*)$
     RewriteCond %{REQUEST_URI} !^/balancer.html$
@@ -81,80 +73,72 @@
 </VirtualHost>
 
 <% if @params[:ssl] -%>
-  <VirtualHost *:443>
-    ServerName <%= @params[:server_name] %>
+<VirtualHost *:443>
+  ServerName <%= @params[:server_name] %>
 
-    <% if @params[:server_aliases] -%>
-      <% @params[:server_aliases].each do |server_alias| -%>
-        ServerAlias <%= server_alias %>
-      <% end -%>
+  <% if @params[:server_aliases] -%>
+  <% @params[:server_aliases].each do |server_alias| -%>
+  ServerAlias <%= server_alias %>
+  <% end -%>
+  <% end -%>
+
+  <% if @params[:domain] -%>
+  SSLEngine on
+  SSLCertificateFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.com.crt" %>
+  SSLCertificateChainFile <%= "/etc/ssl/certs/#{@params[:domain]}/sf_bundle.crt" %>
+  SSLCertificateKeyFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.key" %>
+  <% end -%>
+
+  DocumentRoot <%= @params[:path] %>
+
+  RailsEnv <%= @params[:rails_env] %>
+
+  <% if @params[:passenger_ruby] -%>
+  PassengerRuby <%= @params[:passenger_ruby] %>
+  <% end %>
+
+  # NewRelic Request Queue Reporting.
+  RequestHeader set X-Request-Start "%t"
+
+  <Directory <%= @params[:path] %>>
+    Options FollowSymLinks
+    AllowOverride None
+
+    <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
+    Require all granted
+    <% else %>
+    Order allow,deny
+    Allow from all
     <% end -%>
-
-    <% if @params[:domain] -%>
-      SSLEngine on
-      SSLCertificateFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.com.crt" %>
-      SSLCertificateChainFile <%= "/etc/ssl/certs/#{@params[:domain]}/sf_bundle.crt" %>
-      SSLCertificateKeyFile <%= "/etc/ssl/certs/#{@params[:domain]}/#{@params[:domain]}.key" %>
-    <% end -%>
-
-    DocumentRoot <%= @params[:path] %>
-
-    RailsEnv <%= @params[:rails_env] %>
-
-    <% if @params[:passenger_ruby] -%>
-      PassengerRuby <%= @params[:passenger_ruby] %>
-    <% end %>
-
-    # NewRelic Request Queue Reporting.
-    RequestHeader set X-Request-Start "%t"
-
-    <Directory <%= @params[:path] %>>
-      Options FollowSymLinks
-      AllowOverride None
-
-      <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
-      Require all granted
-      <% else %>
-      Order allow,deny
-      Allow from all
-      <% end -%>
-    </Directory>
+  </Directory>
     
-    <Directory />
-      Options FollowSymLinks
-      AllowOverride None
-    </Directory>
+  <Directory />
+    Options FollowSymLinks
+    AllowOverride None
+  </Directory>
 
-    ExpiresActive On
-    <Directory <%= "#{@params[:path]}/assets" %>>
-      Options MultiViews
-      ExpiresDefault "access plus 1 year"
-      Header set Access-Control-Allow-Origin "*"
-    </Directory>
+  ExpiresActive On
+  <Directory <%= "#{@params[:path]}/assets" %>>
+    Options MultiViews
+    ExpiresDefault "access plus 1 year"
+    Header set Access-Control-Allow-Origin "*"
+  </Directory>
 
-    LogLevel info
-    ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
-    CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-access.log combined
-    TransferLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-transfer.log
+  LogLevel info
+  ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
+  CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-access.log combined
+  TransferLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-transfer.log
 
-    AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
+  AddOutputFilterByType DEFLATE text/html text/css application/x-javascript application/javascript
 
-    RewriteEngine On
+  RewriteEngine On
 
-    ErrorDocument 503 /system/maintenance.html
+  ErrorDocument 503 /system/maintenance.html
 
-    RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
-    RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
-    RewriteCond %{REQUEST_URI} !^/balancer.html$
-    RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-    RewriteRule ^.*$  -  [redirect=503,last]
-
-    <% if node['apache2']['enable_charts_redirect'] -%>
-      RewriteRule ^/charts(.*)$ https://optimis-reporting.optimispt.com%{REQUEST_URI} [R,L]
-    <% end -%>
-
-    <% if node['apache2']['enable_optimispt_redirect'] -%>
-      RewriteRule ^((?!charts).)*$ https://rs-production.optimispt.com%{REQUEST_URI} [R,L]
-    <% end -%>
-  </VirtualHost>
+  RewriteCond %{REQUEST_URI} !.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$
+  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+  RewriteCond %{REQUEST_URI} !^/balancer.html$
+  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+  RewriteRule ^.*$  -  [redirect=503,last]
+</VirtualHost>
 <% end -%>
