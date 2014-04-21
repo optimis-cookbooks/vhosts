@@ -35,19 +35,6 @@
     Header set Access-Control-Allow-Origin "*"
   </Directory>
 
-  <% if @params[:locations] -%>
-    <% @params[:locations].each do |location| -%>
-      <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
-      Require all denied
-      <% else %>
-      Order allow,deny
-      Allow from all
-      <% end -%>
-
-      Allow from <%= location[:ips].join(' ') %>
-    <% end -%>
-  <% end -%>
-
   LogLevel info
   ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
   CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-access.log combined
@@ -66,9 +53,9 @@
   RewriteRule ^.*$  -  [redirect=503,last]
 
   <% if @params[:ssl] -%>
-    RewriteCond %{REQUEST_URI} !^/api/v4(.*)$
-    RewriteCond %{REQUEST_URI} !^/balancer.html$
-    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
+  RewriteCond %{REQUEST_URI} !^/api/v4(.*)$
+  RewriteCond %{REQUEST_URI} !^/balancer.html$
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
   <% end -%>
 </VirtualHost>
 
