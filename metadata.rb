@@ -1,3 +1,5 @@
+name 'vhosts'
+
 maintainer        'OptimisCorp., Inc.'
 maintainer_email  'ops+cookbooks@optimiscorp.com'
 
