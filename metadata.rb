@@ -1,4 +1,4 @@
-name 'vhosts'
+name              'vhosts'
 
 maintainer        'OptimisCorp., Inc.'
 maintainer_email  'ops+cookbooks@optimiscorp.com'
@@ -8,7 +8,7 @@ license           'Apache 2.0'
 description       'Configures apache2 vhosts using node attributes the definition provided by the apache2 cookbook.'
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 
-version           '0.0.1'
+version           '0.0.2'
 
 recipe            'vhosts::default', 'Configures apache2 vhosts.'
 
