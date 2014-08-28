@@ -1,0 +1,25 @@
+---
+driver:
+  name: docker
+  socket: <%= ENV['DOCKER_HOST'] %>
+  provision_command: curl -L https://www.getchef.com/chef/install.sh | bash
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu
+
+suites:
+  - name: default
+    run_list:
+      - recipe[vhosts::default]
+    attributes:
+      apache2:
+        vhosts:
+          - name: test.optimispt.com
+            title: test
+            domain: optimispt.com
+            aliases:
+              - public.optimispt.com
+            environment: test
