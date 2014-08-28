@@ -9,6 +9,7 @@ The attributes can be set at any of the following levels:
 * environment attributes
 * role attributes
 * node attributes
+* cookbook attributes
 
 This cookbook ships with templates for non SSL and SSL based configurations. 
 
@@ -61,7 +62,7 @@ The apache2 cookbook parameters used by the definition are:
 Usage
 =====
 
-Using this cookbook is relatively straightforward. Add the desired attributes to a node, or create a role.
+Using this cookbook is relatively straightforward. Add the desired attributes to a node, role or in a cookbook.
 
     % cat roles/rails.rb
 
