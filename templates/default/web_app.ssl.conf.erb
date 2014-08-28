@@ -55,7 +55,8 @@
   <% if @params[:ssl] -%>
   RewriteCond %{REQUEST_URI} !^/api/v4(.*)$
   RewriteCond %{REQUEST_URI} !^/balancer.html$
-  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
   <% end -%>
 </VirtualHost>
 
@@ -98,7 +99,7 @@
     Allow from all
     <% end -%>
   </Directory>
-    
+  
   <Directory />
     Options FollowSymLinks
     AllowOverride None
@@ -110,6 +111,19 @@
     ExpiresDefault "access plus 1 year"
     Header set Access-Control-Allow-Origin "*"
   </Directory>
+
+  <Location /server-status>
+    SetHandler server-status
+
+    <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
+    Require all denied
+    <% else %>
+    Order allow,deny
+    Allow from all
+    <% end -%>
+
+    Allow from 127.0.0.1
+  </Location>
 
   LogLevel info
   ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
