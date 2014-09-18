@@ -40,18 +40,36 @@ describe 'vhosts::default' do
     end
 
     context 'when vhosts are defined for node' do
-      let(:chef_run) do
-        ChefSpec::Runner.new do |node|
-          node.set['apache2'] = { vhosts: [{ name: 'test' }] }
-        end.converge described_recipe
+      context 'when cfg is an array' do
+        let(:chef_run) do
+          ChefSpec::Runner.new do |node|
+            node.set['apache2'] = { vhosts: [{ name: 'test' }] }
+          end.converge described_recipe
+        end
+
+        it 'should include the apache cookbook' do
+          expect(chef_run).to include_recipe 'apache2'
+        end
+
+        it 'should configure the vhost' do
+          expect(chef_run).to create_template '/etc/apache2/sites-available/test.conf'
+        end
       end
 
-      it 'should include the apache cookbook' do
-        expect(chef_run).to include_recipe 'apache2'
-      end
+      context 'when cfg is a hash' do
+        let(:chef_run) do
+          ChefSpec::Runner.new do |node|
+            node.set['apache2'] = { vhosts: { test: { name: 'test' }} }
+          end.converge described_recipe
+        end
 
-      it 'should configure the vhost' do
-        expect(chef_run).to create_template '/etc/apache2/sites-available/test.conf'
+        it 'should include the apache cookbook' do
+          expect(chef_run).to include_recipe 'apache2'
+        end
+
+        it 'should configure the vhost' do
+          expect(chef_run).to create_template '/etc/apache2/sites-available/test.conf'
+        end
       end
     end
   end
