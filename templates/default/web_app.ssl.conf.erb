@@ -35,6 +35,10 @@
     Header set Access-Control-Allow-Origin "*"
   </Directory>
 
+  <Location /balancer.html>
+    PassengerEnabled off
+  </Location>
+
   LogLevel info
   ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
   CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-access.log combined
