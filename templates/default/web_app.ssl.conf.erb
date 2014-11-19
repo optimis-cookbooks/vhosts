@@ -112,19 +112,6 @@
     Header set Access-Control-Allow-Origin "*"
   </Directory>
 
-  <Location /server-status>
-    SetHandler server-status
-
-    <% if node['platform'] == 'ubuntu' && node['platform_version'].to_f >= 13.10 -%>
-    Require all denied
-    <% else %>
-    Order allow,deny
-    Allow from all
-    <% end -%>
-
-    Allow from 127.0.0.1
-  </Location>
-
   LogLevel info
   ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-error.log
   CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>-access.log combined
